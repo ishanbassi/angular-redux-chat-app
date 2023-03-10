@@ -1,4 +1,4 @@
-import { Action, ActionCreator } from "redux";
+import { Action, ActionCreator } from 'redux'
 import { Message } from "../Message/message.model";
 import { Thread } from "./thread.model";
 import { uuid } from '../util/uuid';

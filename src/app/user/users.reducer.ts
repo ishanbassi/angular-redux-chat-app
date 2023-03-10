@@ -1,6 +1,8 @@
-import { Reducer } from "redux";
+import { Reducer } from 'redux'
 import { User } from "./user.model";
 import * as userActions from './user.actions'
+import { AppState } from '../app.reducer';
+import { createSelector } from 'reselect';
 
 export interface UsersState{
     currentUser:User | null
@@ -21,3 +23,9 @@ export const userReducer:Reducer<UsersState> = (state = initialState, action) =>
             return state
     }
 }
+
+export const getUserState = (state:AppState) => state.users
+export const getCurrentUser  = createSelector(
+    getUserState,
+    user => user.currentUser
+)

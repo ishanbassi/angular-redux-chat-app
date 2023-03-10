@@ -9,7 +9,7 @@ const devtools: StoreEnhancer<AppState> =
     reduxTool() : f => f;
 
 
-export const createAppStore = createStore(rootReducer,compose(reduxTool))
+export const createAppStore = () =>  createStore(rootReducer,compose(reduxTool))
 
 export const appStoreProviders = [
     {provide:appStore, useFactory:createAppStore}

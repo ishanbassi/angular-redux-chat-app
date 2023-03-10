@@ -1,6 +1,8 @@
 import { Reducer } from "redux";
 import { Thread } from "./thread.model";
 import * as ThreadAction from './thread.actions'
+import {createSelector} from 'reselect'
+import { AppState } from "../app.reducer";
 interface ThreadEntities{
     [id:string]:Thread
 }
@@ -8,13 +10,14 @@ interface ThreadEntities{
 export interface ThreadsState{
     ids:string[];
     entities:ThreadEntities,
-    currentThreadId?:string  | null
+    currentThreadId?:string | null
 }
 
 const initialState:ThreadsState = {
     ids:[],
+    currentThreadId:null,
     entities:{},
-    currentThreadId:null
+
 
 }
 
@@ -69,3 +72,38 @@ export const threadReducer:Reducer<ThreadsState> = (state=initialState, action) 
             return state
     }
 }
+
+export const getThreadsState     = (state:AppState):ThreadsState => state.threads
+export const getThreadEntities = createSelector(
+    getThreadsState,
+    (thread:ThreadsState) => thread.entities
+    )
+
+export const getCurrentThread = createSelector(
+    getThreadsState,
+    getThreadEntities,
+    (state,entities)  => state.currentThreadId ?  entities[state.currentThreadId] : null
+)
+export const getAllThreads = createSelector(
+    getThreadEntities,
+    (entities) => Object.keys(entities).map(id => entities[id])
+)
+
+export const getUnreadMessagesCount = createSelector(
+    getAllThreads,
+    threads => threads.reduce((count:number, thread:Thread) => {
+        thread.messages.forEach(message => {
+            if(!message.isRead)  ++count
+        })
+        return ++count
+    }, 0)
+)
+
+
+export const getAllMessages = createSelector(
+    getAllThreads,
+    ( threads ) =>
+      threads.reduce( // gather all messages
+        (messages:any[], thread) => [...messages, ...thread.messages],
+        []).sort((m1, m2) => m1.sentAt - m2.sentAt)); // sort them by time
+  
